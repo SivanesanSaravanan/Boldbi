@@ -1,9 +1,8 @@
-Command to start build:
+# Bold BI on Kubernetes
 
-$ build.ps1 -buildversion <version> [-forlinux] <true|false> [-dotnetruntimelinux] <dotnet-run-file-path> [-pushcontainerimage] <true|false>
-
-
-eg:
-
-$ build.ps1 -buildversion "3.3.40"
-$ build.ps1 -buildversion "3.3.40" -pushcontainerimage "true"
+Bold BI can be deployed on Kubernetes cluster. You can create Kubernetes cluster on either cloud or on-premise infrastructure. After completing cluster creation, connect to it and you can download the configuration files [here](deploy/). This directory includes configuration YAML files, which contains all the configuration settings needed to deploy Bold BI on Kubernetes cluster. The following links explain Bold BI Kubernetes deployment in a specific cloud and on-premise environments.
+    
+* [Google Kubernetes Engine (GKE)](docs/google-gke.md)
+* [Amazon Elastic Kubernetes Service (EKS)](docs/amazon-eks.md)
+* [Azure Kubernetes Service (AKS)](docs/microsoft-aks.md)
+* [On-premise](docs/on-premise.md)
