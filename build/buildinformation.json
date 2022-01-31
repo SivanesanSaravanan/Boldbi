@@ -1,0 +1,148 @@
+{
+  "gitcredentials": {
+    "username": "buildautomation",
+    "password": "Coolcomp299"
+  },
+  "linuxmachinedetails": {
+    "username": "azureuser",
+    "password": "AzureUser@123",
+    "domain": "ftp://104.41.149.143/"
+  },
+  "containerrepodetails": {
+    "containerimageprefix": "gcr.io/boldbi-294612",
+    "containerrepologincommands": [
+      "gcloud auth activate-service-account kubernetes@boldbi-294612.iam.gserviceaccount.com --key-file=<keyfile_fullpath>",
+      "gcloud projects add-iam-policy-binding boldbi-294612 --member=serviceAccount:kubernetes@boldbi-294612.iam.gserviceaccount.com --role=roles/containerregistry.ServiceAgent",
+      "ECHO 'Y' | gcloud auth configure-docker"
+    ]
+  },
+  "versioning": {
+    "files": [
+      "bi/src/BI/Web/Syncfusion.Server.Dashboards/Configuration/OnPremise/MSSQL/versioned_scripts/versions.xml",
+      "bi/src/BI/Web/Syncfusion.Server.Dashboards/Configuration/OnPremise/PostgreSQL/versioned_scripts/versions.xml"
+    ]
+  },
+  "optionalassemblies": [
+    "DnsClient.dll",
+    "MongoDB.Bson.dll",
+    "MongoDB.Driver.Core.dll",
+    "MongoDB.Driver.dll",
+    "MongoDB.Driver.Legacy.dll",
+    "MySqlConnector.dll",
+    "InfluxData.Net.dll",
+    "Snowflake.Data.dll",
+    "Oracle.ManagedDataAccess.dll",
+    "Npgsql.dll"
+  ],
+  "projects": [
+    {
+      "name": "bi",
+      "repo": "https://gitlab.syncfusion.com/data-science/BoldBI-Server.git",
+      "branch": "development",
+      "buildorder": 2,
+      "buildcmd": "Build.ps1 -target Publish",
+      "buildoutputs": [
+        {
+          "name": "web",
+          "sourcedir": "output/bi",
+          "destdir": "bi/web",
+          "outputdirtype": "output",
+          "containerimagename": "boldbi-server"
+        },
+        {
+          "name": "api",
+          "sourcedir": "output/api",
+          "destdir": "bi/api",
+          "outputdirtype": "output",
+          "containerimagename": "boldbi-server-api"
+        },
+        {
+          "name": "jobs",
+          "sourcedir": "output/jobs",
+          "destdir": "bi/jobs",
+          "outputdirtype": "output",
+          "containerimagename": "boldbi-server-jobs"
+        }
+      ],
+      "afterbuild": {
+        "filecopyactions": [
+          {
+            "sourcedir": "src/BI/Web/Syncfusion.Server.Dashboards/configuration/onpremise",
+            "destdir": "idp/web/configuration/onpremise/boldbi",
+            "outputdirtype": "output"
+          },
+          {
+            "sourcedir": "src/BI/Web/Syncfusion.Server.Dashboards/configuration/db_schema.xml",
+            "destdir": "idp/web/configuration/onpremise/boldbi",
+            "outputdirtype": "output"
+          }
+        ]
+      }
+    },
+    {
+      "name": "idp",
+      "repo": "https://gitlab.syncfusion.com/data-science/BoldID.git",
+      "branch": "development",
+      "buildorder": 3,
+      "buildcmd": "Build.ps1 -target Publish",
+      "buildoutputs": [
+        {
+          "name": "web",
+          "sourcedir": "output/idweb",
+          "destdir": "idp/web",
+          "outputdirtype": "output",
+          "containerimagename": "boldbi-identity"
+        },
+        {
+          "name": "api",
+          "sourcedir": "output/idapi",
+          "destdir": "idp/api",
+          "outputdirtype": "output",
+          "containerimagename": "boldbi-identity-api"
+        },
+        {
+          "name": "ums",
+          "sourcedir": "output/tmweb",
+          "destdir": "idp/ums",
+          "outputdirtype": "output",
+          "containerimagename": "boldbi-ums"
+        }
+      ]
+    },
+    {
+      "name": "designer",
+      "repo": "https://gitlab.syncfusion.com/data-science/dashboard-designer-web-service.git",
+      "branch": "development-core",
+      "buildorder": 1,
+      "buildcmd": "build.ps1 -target onpremiseboldbi -configuration onpremiseboldbi -domain boldbi -GitUserName buildautomation -GitPassword Coolcomp299 -nugetserverurl 'http://nexus.syncfusion.com/repository/boldbi-development/,https://api.nuget.org/v3/index.json'",
+      "buildoutputs": [
+        {
+          "name": "dataservice",
+          "sourcedir": "output/dataservice",
+          "destdir": "bi/dataservice",
+          "outputdirtype": "output",
+          "containerimagename": "boldbi-designer"
+        }
+      ],
+      "afterbuild": {
+        "filecopyactions": [
+          {
+            "sourcedir": "src/scripts",
+            "destdir": "bi/src/BI/Web/Syncfusion.Server.Dashboards/wwwroot/webdesignerservice/scripts",
+            "outputdirtype": "working"
+          },
+          {
+            "sourcedir": "src/themes",
+            "destdir": "bi/src/BI/Web/Syncfusion.Server.Dashboards/wwwroot/webdesignerservice/themes",
+            "outputdirtype": "working"
+          },
+          {
+            "sourcedir": "src/fonts",
+            "destdir": "bi/src/BI/Web/Syncfusion.Server.Dashboards/wwwroot/webdesignerservice/fonts",
+            "outputdirtype": "working"
+          }
+        ]
+      }
+    }
+  ]
+}
